@@ -1,6 +1,8 @@
-import requests
+import os
 from pathlib import Path
-from PIL import Image, UnidentifiedImageError
+
+import requests
+from PIL import Image
 
 
 def load_image(url, path_file):
@@ -13,24 +15,17 @@ def load_image(url, path_file):
         file.write(response.content)
 
 
-def file_extension(filename):
-    return filename.rsplit('.', 1)[-1]
+def get_file_extension(filename):
+    return os.path.splitext(filename)[1]
 
 
 def resize_image(path_image):
     converted_extension = ('PNG', 'TIFF')
-
-    try:
-        image = Image.open(path_image)
-    except UnidentifiedImageError:
-        print(f"Error open file {path_image}")
-        return None
-
-    max_size = max(image.size)
-    if max_size > 1080:
-        difference = max_size / 1080
-        image.thumbnail((int(image.width / difference), int(image.height / difference)))
-        path_image_not_extension = path_image.rsplit('.', 1)[0]
+    image = Image.open(path_image)
+    if max(image.size) > 1080:
+        image.thumbnail((1080, 1080))
+        path_image_not_extension = os.path.splitext(path_image)[0]
         if image.format in converted_extension:
             image = image.convert('RGB')
         image.save(f'{path_image_not_extension}.jpg', format="JPEG")
+    return f'{os.path.splitext(path_image)[0]}.jpg'

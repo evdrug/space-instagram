@@ -5,25 +5,23 @@ from instabot import Bot
 
 from utilites import resize_image
 
-FOLDER = 'images'
-load_dotenv()
-LOGIN = os.getenv('INSTAGRAM_LOGIN')
-PASSWORD = os.getenv('INSTAGRAM_PASSWORD')
-
-
-def optimize_photos():
-    for file in os.listdir(FOLDER):
-        if os.path.isfile(f'{FOLDER}/{file}'):
-            resize_image(f'{FOLDER}/{file}')
-
 
 if __name__ == '__main__':
-    optimize_photos()
+    load_dotenv()
+    login = os.getenv('INSTAGRAM_LOGIN')
+    password = os.getenv('INSTAGRAM_PASSWORD')
+    folder = 'images'
 
     bot = Bot()
-    bot.login(username=LOGIN, password=PASSWORD)
-    for image in os.listdir(FOLDER):
-        if image.endswith('.jpg'):
-            bot.upload_photo(f'{FOLDER}/{image}', caption=image.replace(".jpg", ''))
-            if bot.api.last_response.status_code != 200:
-                print(bot.api.last_response)
+    bot.login(username=login, password=password)
+    for path in os.listdir(folder):
+        if os.path.isfile(f'{folder}/{path}'):
+            try:
+                image_name = resize_image(f'{folder}/{path}')
+            except Exception as e:
+                print('Ошибка при обработке', path, e)
+            else:
+                if image_name:
+                    bot.upload_photo(image_name, caption=image_name.replace(".jpg", ''))
+                    if bot.api.last_response.status_code != 200:
+                        print(bot.api.last_response)

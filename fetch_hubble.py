@@ -1,6 +1,6 @@
 import requests
 
-from utilites import load_image, file_extension
+from utilites import load_image, get_file_extension
 
 
 def fetch_hubble_launch(id_image, folder='./'):
@@ -8,7 +8,7 @@ def fetch_hubble_launch(id_image, folder='./'):
     response.raise_for_status()
     extra_file = response.json()['image_files'][-1]
     url = f"https:{extra_file['file_url']}"
-    path_file = f'{folder}/{id_image}.{file_extension(url)}'
+    path_file = f'{folder}/{id_image}{get_file_extension(url)}'
     load_image(url, path_file)
 
 
